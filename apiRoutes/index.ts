@@ -1,6 +1,6 @@
-import express from "express";
-import healthCheckRouter from "./healthCheck";
+import { Router } from "express";
+import healthCheckHandler from "./healthCheck";
 
-const apiRoutes = express.Router();
+const apiRoutes = Router();
 
-export default apiRoutes.get("/healthcheck", healthCheckRouter);
+export default apiRoutes.get("/healthcheck", healthCheckHandler);
