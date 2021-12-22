@@ -3,13 +3,11 @@ import { Request } from "express";
 import { axiosInstance as axios } from "../../config";
 
 interface GithubPullRequest {
+  id: number;
   number: number;
+  title: string;
+  user: { login: string };
 }
-
-type GithubQueryParams = {
-  repoOwner: any;
-  repoName: any;
-};
 
 export function validateRequest(req: Request): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -27,24 +25,55 @@ export function requestPRInfo(url: string) {
   return axios.get(url);
 }
 
-export function convertPRNumbersToUrls(
+function calculateCommitNumber(githubResponses: AxiosResponse[]): number[] {
+  return githubResponses.map((res) => res.data.length);
+}
+
+function formatCommitRequestData(
   response: AxiosResponse<GithubPullRequest[], any>
 ) {
-  const url = response.config.url;
-  if (url) {
-    return response.data.map((pr) => url + `/${pr.number}/commits`);
+  const prUrl = response.config.url;
+  const prDetails = response.data.map(
+    ({ id, number, title, user: { login } }) => {
+      return { id, number, title, author: login };
+    }
+  );
+  if (prUrl) {
+    return Promise.resolve({
+      commitUrls: response.data.map((pr) => prUrl + `/${pr.number}/commits`),
+      prDetails,
+    });
   }
   return Promise.reject("Unable to parse base PR url.");
 }
 
-export function convertUrlsToAxiosRequests(urls: string[]) {
-  return urls.map((url) => axios.get(url));
+function initiateCommitRequest({ commitUrls }: { commitUrls: string[] }) {
+  return Promise.all(commitUrls.map((url) => axios.get(url)));
 }
 
-export function requestCommitDetails(urls: Promise<AxiosResponse<any, any>>[]) {
-  return Promise.all(urls);
-}
-
-export function calculateCommitNumber(githubResponses: AxiosResponse[]) {
-  return githubResponses.map((res) => res.data);
+export function requestCommitInfo(
+  prResponse: AxiosResponse<GithubPullRequest[], any>
+) {
+  const prDetails = prResponse.data.map(
+    ({ id, number, title, user: { login } }) => {
+      return { id, number, title, author: login };
+    }
+  );
+  return formatCommitRequestData(prResponse)
+    .then(initiateCommitRequest)
+    .then(calculateCommitNumber)
+    .then((commitNumbers) => {
+      const formattedCommits = commitNumbers.map((number, i) => {
+        const pr = prDetails[i];
+        return {
+          prId: pr.id,
+          prNumber: pr.number,
+          author: pr.author,
+          title: pr.title,
+          commitCount: number,
+        };
+      });
+      return formattedCommits;
+    })
+    .catch(() => Promise.reject("Failed processing commit info"));
 }
