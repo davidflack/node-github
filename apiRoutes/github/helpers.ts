@@ -11,27 +11,30 @@ type GithubQueryParams = {
   repoName: any;
 };
 
-export function validateRequest(req: Request): Promise<GithubQueryParams> {
+export function validateRequest(req: Request): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!req.query.repoOwner || !req.query.repoName) {
       reject(
         'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
       );
     } else {
-      resolve({ repoOwner: req.query.repoOwner, repoName: req.query.repoName });
+      resolve(`/${req.query.repoOwner}/${req.query.repoName}/pulls`);
     }
   });
 }
 
-export function requestPRInfo({ repoOwner, repoName }: GithubQueryParams) {
-  return axios.get(`/${repoOwner}/${repoName}/pulls`);
+export function requestPRInfo(url: string) {
+  return axios.get(url);
 }
 
 export function convertPRNumbersToUrls(
-  url: string,
   response: AxiosResponse<GithubPullRequest[], any>
-): string[] {
-  return response.data.map((pr) => url + `/${pr.number}/commits`);
+) {
+  const url = response.config.url;
+  if (url) {
+    return response.data.map((pr) => url + `/${pr.number}/commits`);
+  }
+  return Promise.reject("Unable to parse base PR url.");
 }
 
 export function convertUrlsToAxiosRequests(urls: string[]) {

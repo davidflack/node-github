@@ -10,10 +10,10 @@ import {
 
 function githubRepoHandler(req: Request, res: Response, next: NextFunction) {
   const { repoOwner, repoName } = req.query;
-  const url = `/${repoOwner}/${repoName}/pulls`;
+
   validateRequest(req)
     .then(requestPRInfo)
-    .then(convertPRNumbersToUrls.bind(null, url))
+    .then(convertPRNumbersToUrls)
     .then(convertUrlsToAxiosRequests)
     .then(requestCommitDetails)
     .then(calculateCommitNumber)
