@@ -1,5 +1,5 @@
 import supertest from "supertest";
-import app from "../app";
+import app from "../../app";
 
 test("Healthcheck returns 200", async () => {
   await supertest(app)

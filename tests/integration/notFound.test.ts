@@ -1,5 +1,5 @@
 import supertest from "supertest";
-import app from "../app";
+import app from "../../app";
 
 test("API returns 404 on non-existent route", async () => {
   const badUrl = "/api/someBogusRoute/pleaseFail";
