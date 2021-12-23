@@ -10,15 +10,12 @@ interface GithubPullRequest {
 }
 
 export function validateRequest(req: Request): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (!req.query.repoOwner || !req.query.repoName) {
-      reject(
-        'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
-      );
-    } else {
-      resolve(`/${req.query.repoOwner}/${req.query.repoName}/pulls`);
-    }
-  });
+  if (!req.query.repoOwner || !req.query.repoName) {
+    return Promise.reject(
+      'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
+    );
+  }
+  return Promise.resolve(`/${req.query.repoOwner}/${req.query.repoName}/pulls`);
 }
 
 export function requestPRInfo(url: string) {
