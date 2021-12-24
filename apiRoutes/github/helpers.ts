@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { Request } from "express";
 import { axiosInstance as axios } from "../../config";
 
-interface GithubPullRequest {
+export interface GithubPullRequestModel {
   id: number;
   number: number;
   title: string;
@@ -27,7 +27,7 @@ function calculateCommitNumber(githubResponses: AxiosResponse[]): number[] {
 }
 
 function formatCommitRequestData(
-  response: AxiosResponse<GithubPullRequest[], any>
+  response: AxiosResponse<GithubPullRequestModel[], any>
 ) {
   const prUrl = response.config.url;
   const prDetails = response.data.map(
@@ -49,7 +49,7 @@ function initiateCommitRequest({ commitUrls }: { commitUrls: string[] }) {
 }
 
 export function requestCommitInfo(
-  prResponse: AxiosResponse<GithubPullRequest[], any>
+  prResponse: AxiosResponse<GithubPullRequestModel[], any>
 ) {
   const prDetails = prResponse.data.map(
     ({ id, number, title, user: { login } }) => {
