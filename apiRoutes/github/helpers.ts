@@ -26,7 +26,7 @@ function calculateCommitNumber(githubResponses: AxiosResponse[]): number[] {
   return githubResponses.map((res) => res.data.length);
 }
 
-export function formatCommitRequestData(
+export function generateCommitRequestUrls(
   response: AxiosResponse<GithubPullRequestModel[], any>
 ) {
   const prUrl = response?.config?.url ? response.config.url : null;
@@ -50,7 +50,7 @@ export function requestCommitInfo(
       return { id, number, title, author: login };
     }
   );
-  return formatCommitRequestData(prResponse)
+  return generateCommitRequestUrls(prResponse)
     .then(initiateCommitRequest)
     .then(calculateCommitNumber)
     .then((commitNumbers) => {

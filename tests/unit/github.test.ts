@@ -5,7 +5,7 @@ import {
   GithubPullRequestModel,
   validateRequest,
   requestPRInfo,
-  formatCommitRequestData,
+  generateCommitRequestUrls,
 } from "../../apiRoutes/github/helpers";
 
 describe("validateRequest", () => {
@@ -56,7 +56,7 @@ describe("requestPRInfo", () => {
   });
 });
 
-describe("formatCommitRequestData", () => {
+describe("generateCommitRequestUrls", () => {
   it("should generate url's when given response.config.url", () => {
     const mockPrUrl = "/mocking/pr/url";
     const mockPrData = [
@@ -69,7 +69,7 @@ describe("formatCommitRequestData", () => {
       },
       data: mockPrData,
     } as AxiosResponse<GithubPullRequestModel[], any>;
-    return formatCommitRequestData(prResponse).then((res) => {
+    return generateCommitRequestUrls(prResponse).then((res) => {
       expect(res).toBeInstanceOf(Array);
       expect(res.length).toBe(mockPrData.length);
       mockPrData.forEach((item, i) =>
@@ -82,7 +82,7 @@ describe("formatCommitRequestData", () => {
     const prResponse = {
       config: {},
     } as AxiosResponse<GithubPullRequestModel[], any>;
-    return formatCommitRequestData(prResponse).catch((e) => {
+    return generateCommitRequestUrls(prResponse).catch((e) => {
       expect(e).toBe("Unable to parse base PR url.");
     });
   });
