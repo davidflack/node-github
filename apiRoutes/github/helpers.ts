@@ -26,25 +26,19 @@ function calculateCommitNumber(githubResponses: AxiosResponse[]): number[] {
   return githubResponses.map((res) => res.data.length);
 }
 
-function formatCommitRequestData(
+export function formatCommitRequestData(
   response: AxiosResponse<GithubPullRequestModel[], any>
 ) {
-  const prUrl = response.config.url;
-  const prDetails = response.data.map(
-    ({ id, number, title, user: { login } }) => {
-      return { id, number, title, author: login };
-    }
-  );
+  const prUrl = response?.config?.url ? response.config.url : null;
   if (prUrl) {
-    return Promise.resolve({
-      commitUrls: response.data.map((pr) => prUrl + `/${pr.number}/commits`),
-      prDetails,
-    });
+    return Promise.resolve(
+      response.data.map((pr) => prUrl + `/${pr.number}/commits`)
+    );
   }
   return Promise.reject("Unable to parse base PR url.");
 }
 
-function initiateCommitRequest({ commitUrls }: { commitUrls: string[] }) {
+function initiateCommitRequest(commitUrls: string[]) {
   return Promise.all(commitUrls.map((url) => axios.get(url)));
 }
 
