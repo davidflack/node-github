@@ -6,7 +6,10 @@ import {
   validateRequest,
   requestPRInfo,
   generateCommitRequestUrls,
+  initiateCommitRequests,
 } from "../../apiRoutes/github/helpers";
+
+beforeEach(() => jest.clearAllMocks());
 
 describe("validateRequest", () => {
   it("rejects promise on bad params", () => {
@@ -84,6 +87,18 @@ describe("generateCommitRequestUrls", () => {
     } as AxiosResponse<GithubPullRequestModel[], any>;
     return generateCommitRequestUrls(prResponse).catch((e) => {
       expect(e).toBe("Unable to parse base PR url.");
+    });
+  });
+});
+
+describe("initiateCommitRequests", () => {
+  it("fires an axios get request for every url", async () => {
+    const mockGet = jest.spyOn(axios, "get");
+    const mockUrls = ["url1", "url2", "url3", "url4", "url5"];
+    await initiateCommitRequests(mockUrls);
+    expect(mockGet).toHaveBeenCalledTimes(mockUrls.length);
+    mockUrls.forEach((url) => {
+      expect(mockGet).toHaveBeenCalledWith(url);
     });
   });
 });

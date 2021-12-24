@@ -38,7 +38,7 @@ export function generateCommitRequestUrls(
   return Promise.reject("Unable to parse base PR url.");
 }
 
-function initiateCommitRequest(commitUrls: string[]) {
+export function initiateCommitRequests(commitUrls: string[]) {
   return Promise.all(commitUrls.map((url) => axios.get(url)));
 }
 
@@ -51,7 +51,7 @@ export function requestCommitInfo(
     }
   );
   return generateCommitRequestUrls(prResponse)
-    .then(initiateCommitRequest)
+    .then(initiateCommitRequests)
     .then(calculateCommitNumber)
     .then((commitNumbers) => {
       const formattedCommits = commitNumbers.map((number, i) => {
