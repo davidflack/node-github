@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
+import cors from "cors";
 
 import apiRoutes from "./apiRoutes";
 
@@ -9,6 +10,7 @@ const app = express()
   .use(express.urlencoded({ extended: false }))
   .use(helmet())
   .use(morgan("dev"))
+  .use(cors({ origin: true, credentials: true }))
   .use("/api", apiRoutes)
   .use(notFoundHandler);
 

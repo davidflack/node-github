@@ -15,7 +15,9 @@ export function validateRequest(req: Request): Promise<string> {
       'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
     );
   }
-  return Promise.resolve(`/${req.query.repoOwner}/${req.query.repoName}/pulls`);
+  const repoOwner = encodeURIComponent(String(req.query.repoOwner));
+  const repoName = encodeURIComponent(String(req.query.repoName));
+  return Promise.resolve(`/${repoOwner}/${repoName}/pulls`);
 }
 
 export function requestPRInfo(url: string) {
