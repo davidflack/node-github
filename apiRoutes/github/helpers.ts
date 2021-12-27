@@ -22,10 +22,6 @@ export function requestPRInfo(url: string) {
   return axios.get(url);
 }
 
-function calculateCommitNumber(githubResponses: AxiosResponse[]): number[] {
-  return githubResponses.map((res) => res.data.length);
-}
-
 export function generateCommitRequestUrls(
   response: AxiosResponse<GithubPullRequestModel[], any>
 ) {
@@ -42,6 +38,12 @@ export function initiateCommitRequests(commitUrls: string[]) {
   return Promise.all(commitUrls.map((url) => axios.get(url)));
 }
 
+export function calculateCommitNumber(
+  githubResponses: AxiosResponse[]
+): number[] {
+  return githubResponses.map((res) => res.data.length);
+}
+
 export function requestCommitInfo(
   prResponse: AxiosResponse<GithubPullRequestModel[], any>
 ) {
@@ -55,16 +57,16 @@ export function requestCommitInfo(
     .then(calculateCommitNumber)
     .then((commitNumbers) => {
       const formattedCommits = commitNumbers.map((number, i) => {
-        const pr = prDetails[i];
+        const { id: prId, number: prNumber, author, title } = prDetails[i];
         return {
-          prId: pr.id,
-          prNumber: pr.number,
-          author: pr.author,
-          title: pr.title,
+          prId,
+          prNumber,
+          author,
+          title,
           commitCount: number,
         };
       });
       return formattedCommits;
     })
-    .catch(() => Promise.reject("Failed processing commit info"));
+    .catch((e) => Promise.reject(`Failed processing commit info: ${e}`));
 }
