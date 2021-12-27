@@ -7,6 +7,7 @@ import {
   requestPRInfo,
   generateCommitRequestUrls,
   initiateCommitRequests,
+  calculateCommitNumber,
 } from "../../apiRoutes/github/helpers";
 
 beforeEach(() => jest.clearAllMocks());
@@ -100,5 +101,22 @@ describe("initiateCommitRequests", () => {
     mockUrls.forEach((url) => {
       expect(mockGet).toHaveBeenCalledWith(url);
     });
+  });
+});
+
+describe("calculateCommitNumber", () => {
+  it("accurately calculates number of commits", () => {
+    const mockCommitDataOne = [
+      { mockData: "fakeCommitOne" },
+      { mockData: "fakeCommitTwo" },
+    ];
+    const mockCommitDataTwo = [{ mockData: "fakeCommitOne" }];
+    const prResponse = [
+      {
+        data: mockCommitDataOne,
+      },
+      { data: mockCommitDataTwo },
+    ] as AxiosResponse[];
+    expect(calculateCommitNumber(prResponse)).toEqual([2, 1]);
   });
 });
