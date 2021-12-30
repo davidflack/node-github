@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { validateRequest, requestPRInfo, requestCommitInfo } from "./helpers";
+import { Request, Response } from "express";
+import {
+  validateRequest,
+  requestPRInfo,
+  requestCommitInfo,
+  extractErrorStatusCode,
+} from "./helpers";
 
-function githubRepoHandler(req: Request, res: Response, next: NextFunction) {
+function githubRepoHandler(req: Request, res: Response) {
   validateRequest(req)
     .then(requestPRInfo)
     .then(requestCommitInfo)
@@ -10,7 +15,8 @@ function githubRepoHandler(req: Request, res: Response, next: NextFunction) {
     })
     .catch((error) => {
       console.error(error);
-      res.status(400).send({ status: 400, error });
+      const status = extractErrorStatusCode(error);
+      res.status(status).send({ status, error: error.message });
     });
 }
 
