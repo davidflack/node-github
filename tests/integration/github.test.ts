@@ -28,8 +28,8 @@ describe("github endpoint requests", () => {
       })
       .expect(200)
       .then((res) => {
-        expect(res.body.commitData).toBeDefined;
-        expect(res.body.commitData).toBeInstanceOf(Array);
+        expect(res.body.data).toBeDefined;
+        expect(res.body.data).toBeInstanceOf(Array);
       });
   });
 });

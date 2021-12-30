@@ -11,7 +11,7 @@ function githubRepoHandler(req: Request, res: Response) {
     .then(requestPRInfo)
     .then(requestCommitInfo)
     .then((commitData) => {
-      res.status(200).send({ commitData });
+      res.status(200).send({ data: commitData });
     })
     .catch((error) => {
       console.error(error);
