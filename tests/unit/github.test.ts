@@ -1,10 +1,11 @@
-import { Request } from "express";
+import { query, Request } from "express";
 import { AxiosResponse } from "axios";
 import { axiosInstance as axios } from "../../config";
 import {
   GithubPullRequestModel,
   validateRequest,
   requestPRInfo,
+  trimQueryParamsFromUrl,
   generateCommitRequestUrls,
   initiateCommitRequests,
   calculateCommitNumber,
@@ -38,9 +39,29 @@ describe("validateRequest", () => {
     } as unknown as Request;
     return validateRequest(mockGoodRequest).then((res) => {
       expect(res).toEqual(
-        `/${mockGoodRequest.query.repoOwner}/${mockGoodRequest.query.repoName}/pulls`
+        `/${mockGoodRequest.query.repoOwner}/${mockGoodRequest.query.repoName}/pulls?page=1`
       );
     });
+  });
+
+  it("rejects if page query param is not a number", async () => {
+    const ownerNameQuery = {
+      repoOwner: "facebook",
+      repoName: "react",
+    };
+    const mockBadRequestWithStringPage = {
+      query: {
+        ...ownerNameQuery,
+        page: "UH-OH THIS SHOULD BE A NUMBER :(",
+      },
+    } as unknown as Request;
+    const errorMessage = 'Optional query parameter "page" must be a number.';
+
+    try {
+      await validateRequest(mockBadRequestWithStringPage);
+    } catch (e) {
+      expect(e.message).toEqual(errorMessage);
+    }
   });
 });
 
@@ -58,6 +79,15 @@ describe("requestPRInfo", () => {
     expect(res).toEqual(response);
     expect(mockGet).toHaveBeenCalledWith(mockUrl);
     expect(mockGet).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("trimQueryParamsFromUrl", () => {
+  it("trims query params from end of url", () => {
+    const baseUrl = "https://api.github.com/repos/facebook/react/pulls";
+    const queryParams = "?page=1";
+    const fullUrl = baseUrl + queryParams;
+    expect(trimQueryParamsFromUrl(fullUrl)).toBe(baseUrl);
   });
 });
 
