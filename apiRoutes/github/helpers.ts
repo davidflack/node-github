@@ -10,7 +10,12 @@ export interface GithubPullRequestModel {
 }
 
 export function validateRequest(req: Request): Promise<string> {
-  if (!req.query.repoOwner || !req.query.repoName) {
+  if (
+    !req.query.repoOwner ||
+    !req.query.repoName ||
+    !String(req.query.repoOwner) ||
+    !String(req.query.repoName)
+  ) {
     return Promise.reject(
       new Error(
         'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
@@ -21,10 +26,12 @@ export function validateRequest(req: Request): Promise<string> {
       new Error('Optional query parameter "page" must be a number.')
     );
   }
-  const defaultPage = Number(req.query.page) ? req.query.page : 1;
-  return Promise.resolve(
-    `/${req.query.repoOwner}/${req.query.repoName}/pulls?page=${defaultPage}`
-  );
+  const defaultPage = Number(req.query.page)
+    ? encodeURIComponent(Number(req.query.page))
+    : encodeURIComponent(1);
+  const repoOwner = encodeURIComponent(String(req.query.repoOwner));
+  const repoName = encodeURIComponent(String(req.query.repoName));
+  return Promise.resolve(`/${repoOwner}/${repoName}/pulls?page=${defaultPage}`);
 }
 
 export function requestPRInfo(url: string) {
