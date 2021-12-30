@@ -8,6 +8,7 @@ import {
   generateCommitRequestUrls,
   initiateCommitRequests,
   calculateCommitNumber,
+  extractErrorStatusCode,
 } from "../../apiRoutes/github/helpers";
 
 beforeEach(() => jest.clearAllMocks());
@@ -118,5 +119,18 @@ describe("calculateCommitNumber", () => {
       { data: mockCommitDataTwo },
     ] as AxiosResponse[];
     expect(calculateCommitNumber(prResponse)).toEqual([2, 1]);
+  });
+});
+
+describe("extractErrorStatusCode", () => {
+  it("should return status code when defined in params", () => {
+    const statusCode = 400;
+    const error = { response: { status: statusCode } };
+    expect(extractErrorStatusCode(error)).toBe(statusCode);
+  });
+
+  it("should return 500 when no status code is defined", () => {
+    const error = {};
+    expect(extractErrorStatusCode(error)).toBe(500);
   });
 });
