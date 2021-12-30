@@ -22,7 +22,7 @@ describe("validateRequest", () => {
     } as unknown as Request;
     expect(validateRequest(mockBadRequest)).toBeInstanceOf(Promise);
     return validateRequest(mockBadRequest).catch((e) => {
-      expect(e).toEqual(
+      expect(e.message).toEqual(
         'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
       );
     });
@@ -87,7 +87,7 @@ describe("generateCommitRequestUrls", () => {
       config: {},
     } as AxiosResponse<GithubPullRequestModel[], any>;
     return generateCommitRequestUrls(prResponse).catch((e) => {
-      expect(e).toBe("Unable to parse base PR url.");
+      expect(e.message).toBe("Unable to parse base PR url.");
     });
   });
 });
