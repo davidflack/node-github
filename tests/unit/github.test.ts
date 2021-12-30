@@ -8,6 +8,7 @@ import {
   generateCommitRequestUrls,
   initiateCommitRequests,
   calculateCommitNumber,
+  extractErrorStatusCode,
 } from "../../apiRoutes/github/helpers";
 
 beforeEach(() => jest.clearAllMocks());
@@ -22,7 +23,7 @@ describe("validateRequest", () => {
     } as unknown as Request;
     expect(validateRequest(mockBadRequest)).toBeInstanceOf(Promise);
     return validateRequest(mockBadRequest).catch((e) => {
-      expect(e).toEqual(
+      expect(e.message).toEqual(
         'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
       );
     });
@@ -87,7 +88,7 @@ describe("generateCommitRequestUrls", () => {
       config: {},
     } as AxiosResponse<GithubPullRequestModel[], any>;
     return generateCommitRequestUrls(prResponse).catch((e) => {
-      expect(e).toBe("Unable to parse base PR url.");
+      expect(e.message).toBe("Unable to parse base PR url.");
     });
   });
 });
@@ -118,5 +119,18 @@ describe("calculateCommitNumber", () => {
       { data: mockCommitDataTwo },
     ] as AxiosResponse[];
     expect(calculateCommitNumber(prResponse)).toEqual([2, 1]);
+  });
+});
+
+describe("extractErrorStatusCode", () => {
+  it("should return status code when defined in params", () => {
+    const statusCode = 400;
+    const error = { response: { status: statusCode } };
+    expect(extractErrorStatusCode(error)).toBe(statusCode);
+  });
+
+  it("should return 500 when no status code is defined", () => {
+    const error = {};
+    expect(extractErrorStatusCode(error)).toBe(500);
   });
 });

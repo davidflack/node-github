@@ -5,13 +5,13 @@ describe("github endpoint requests", () => {
   const request = supertest(app);
   const url = "/api/github";
 
-  it("Bad github request query params returns 400", async () => {
+  it("Bad github request query params returns error", async () => {
     await request
       .get(url)
       .query({
         badQueryParam: "this won't work",
       })
-      .expect(400)
+      .expect(500)
       .then((res) => {
         expect(res.body.error).toBe(
           'Query parameters "repoOwner" (string) and "repoName" (string) are required.'

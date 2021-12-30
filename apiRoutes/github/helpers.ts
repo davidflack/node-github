@@ -12,7 +12,9 @@ export interface GithubPullRequestModel {
 export function validateRequest(req: Request): Promise<string> {
   if (!req.query.repoOwner || !req.query.repoName) {
     return Promise.reject(
-      'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
+      new Error(
+        'Query parameters "repoOwner" (string) and "repoName" (string) are required.'
+      )
     );
   }
   return Promise.resolve(`/${req.query.repoOwner}/${req.query.repoName}/pulls`);
@@ -20,6 +22,10 @@ export function validateRequest(req: Request): Promise<string> {
 
 export function requestPRInfo(url: string) {
   return axios.get(url);
+}
+
+export function extractErrorStatusCode(err: { response?: { status: number } }) {
+  return err.response?.status ? err.response.status : 500;
 }
 
 export function generateCommitRequestUrls(
@@ -31,7 +37,7 @@ export function generateCommitRequestUrls(
       response.data.map((pr) => prUrl + `/${pr.number}/commits`)
     );
   }
-  return Promise.reject("Unable to parse base PR url.");
+  return Promise.reject(new Error("Unable to parse base PR url."));
 }
 
 export function initiateCommitRequests(commitUrls: string[]) {
@@ -66,7 +72,9 @@ export function requestCommitInfo(
           commitCount: number,
         };
       });
-      return formattedCommits;
+      return Promise.resolve(formattedCommits);
     })
-    .catch((e) => Promise.reject(`Failed processing commit info: ${e}`));
+    .catch((e) =>
+      Promise.reject(new Error(`Failed processing commit info: ${e}`))
+    );
 }
