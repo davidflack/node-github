@@ -1,4 +1,4 @@
-import { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import { Request } from "express";
 import { axiosInstance as axios } from "../../config";
 
