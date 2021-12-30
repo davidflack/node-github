@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { Request } from "express";
 import { axiosInstance as axios } from "../../config";
 
@@ -22,6 +22,10 @@ export function validateRequest(req: Request): Promise<string> {
 
 export function requestPRInfo(url: string) {
   return axios.get(url);
+}
+
+export function extractErrorStatusCode(err: { response?: { status: number } }) {
+  return err.response?.status ? err.response.status : 500;
 }
 
 export function generateCommitRequestUrls(
@@ -68,7 +72,7 @@ export function requestCommitInfo(
           commitCount: number,
         };
       });
-      return formattedCommits;
+      return Promise.resolve(formattedCommits);
     })
     .catch((e) =>
       Promise.reject(new Error(`Failed processing commit info: ${e}`))

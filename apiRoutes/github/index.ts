@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { validateRequest, requestPRInfo, requestCommitInfo } from "./helpers";
+import {
+  validateRequest,
+  requestPRInfo,
+  requestCommitInfo,
+  extractErrorStatusCode,
+} from "./helpers";
 
 function githubRepoHandler(req: Request, res: Response) {
   validateRequest(req)
@@ -8,9 +13,10 @@ function githubRepoHandler(req: Request, res: Response) {
     .then((commitData) => {
       res.status(200).send({ commitData });
     })
-    .catch((error: Error) => {
+    .catch((error) => {
       console.error(error);
-      res.status(400).send({ status: 400, error: error.message });
+      const status = extractErrorStatusCode(error);
+      res.status(status).send({ status, error: error.message });
     });
 }
 
