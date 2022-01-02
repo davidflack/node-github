@@ -33,10 +33,19 @@ function App() {
         })
         .catch(() => {
           setShouldRequestMore(false);
+          setPrs([]);
           setLoading(false);
-          setError(true);
+          showError();
         });
     }
+  };
+
+  const showError = () => {
+    setError(true);
+    setTimeout(() => {
+      setError(false);
+      setShouldRequestMore(true);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -81,7 +90,12 @@ function App() {
         <button type="submit">Look for Commit Data</button>
       </form>
 
-      {error && <p>There was an error retrieving pull request info.</p>}
+      {error && (
+        <p>
+          There was an error retrieving pull request info for {repoName} by{" "}
+          {repoOwner}. Try changing the search terms.
+        </p>
+      )}
 
       {prs &&
         prs.map((pr, i) => {
