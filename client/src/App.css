@@ -1,9 +1,16 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .form-container {
   margin: 15px 0;
 }
 
-.pr-card {
+.pr-container {
   border: 1px solid black;
-  max-width: 300px;
+  width: 600px;
   margin-bottom: 15px;
+  padding: 10px;
 }
