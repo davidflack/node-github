@@ -20,6 +20,6 @@
     "baseUrl": ".",
     "outDir": "dist"
   },
-  "include": ["."],
+  "include": [".", "tests/*.ts"],
   "exclude": ["**/node_modules", "**/.*/", "dist"]
 }
