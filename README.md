@@ -8,6 +8,7 @@ in a given GitHub repository.
 
 - Please follow the directions in the [GitHub documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to generate a personal access token.
 - The only token permissions needed are `repo:status` and `public_repo`.
+- A personal access token is needed for running tests.
 
 ## There are a couple of different ways to run this app locally:
 
@@ -36,3 +37,20 @@ yarn start
 ```
 
 - By default, his will run the UI on `http://localhost:3000` and the REST API at `http://localhost:3131`.
+
+## API Endpoints:
+
+| Url          | Method | Query Parameters                                                                         | Description                                              |
+| ------------ | ------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| /healthcheck | GET    | n/a                                                                                      | Returns 200 when the server is working properly.         |
+| /github      | GET    | `repoOwner` (string, required), `repoName` (string, required), `page` (number, optional) | Returns info for open PR's in a given GitHub repository. |
+
+## Running API tests:
+
+- Ensure you have a `.env` file with the `GITHUB_TOKEN` environment variable declared within the `./server` directory.
+- From within the `./server` directory, run
+
+```
+yarn install
+yarn test
+```
