@@ -1,0 +1,21 @@
+version: "3"
+services:
+  api:
+    build: ./server
+    restart: "always"
+    environment:
+      - GITHUB_TOKEN=your_github_token_here
+  client:
+    build: ./client
+    depends_on:
+      - api
+    environment:
+      - REACT_APP_ENVIRONMENT=docker
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build: ./nginx
+    ports:
+      - "3050:80"

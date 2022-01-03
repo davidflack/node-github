@@ -3,7 +3,7 @@ import app from "../../app";
 
 describe("github endpoint requests", () => {
   const request = supertest(app);
-  const url = "/api/github";
+  const url = "/github";
 
   it("Bad github request query params returns error", async () => {
     await request

@@ -18,12 +18,17 @@ function App() {
     if (repoName && repoOwner && shouldRequestMore) {
       setLoading(true);
       setError(null);
+      const baseUrl =
+        process.env.REACT_APP_ENVIRONMENT === "docker"
+          ? "/api"
+          : "http://localhost:3131";
       fetch(
-        `http://localhost:3131/api/github?repoOwner=${encodeURIComponent(
-          repoOwner
-        )}&repoName=${encodeURIComponent(repoName)}&page=${encodeURIComponent(
-          pageNumber
-        )}`
+        baseUrl +
+          `/github?repoOwner=${encodeURIComponent(
+            repoOwner
+          )}&repoName=${encodeURIComponent(repoName)}&page=${encodeURIComponent(
+            pageNumber
+          )}`
       )
         .then(isSuccessfulResponse)
         .then(({ data }) => {
