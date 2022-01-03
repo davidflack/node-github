@@ -11,7 +11,7 @@ const app = express()
   .use(helmet())
   .use(morgan("dev"))
   .use(cors({ origin: true, credentials: true }))
-  .use("/api", apiRoutes)
+  .use(apiRoutes)
   .use(notFoundHandler);
 
 function notFoundHandler(request: Request, response: Response) {
