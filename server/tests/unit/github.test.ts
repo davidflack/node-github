@@ -1,4 +1,4 @@
-import { query, Request } from "express";
+import { Request } from "express";
 import { AxiosResponse } from "axios";
 import { axiosInstance as axios } from "../../config";
 import {
