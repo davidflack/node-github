@@ -10,6 +10,9 @@ import {
   initiateCommitRequests,
   calculateCommitNumber,
   extractErrorStatusCode,
+  transformPullRequestResponse,
+  PRDetail,
+  findCommitCountForPR,
 } from "../../apiRoutes/github/helpers";
 
 beforeEach(() => jest.clearAllMocks());
@@ -149,6 +152,53 @@ describe("calculateCommitNumber", () => {
       { data: mockCommitDataTwo },
     ] as AxiosResponse[];
     expect(calculateCommitNumber(prResponse)).toEqual([2, 1]);
+  });
+});
+
+describe("transformPullRequestResponse", () => {
+  it("accurately formats data from pull request response", () => {
+    const id = 1;
+    const number = 1;
+    const title = "one";
+    const author = "oneLogin";
+    const prFromGithub: GithubPullRequestModel = {
+      id,
+      number,
+      title,
+      user: {
+        login: author,
+      },
+    };
+    const transformedPR: PRDetail = {
+      id,
+      number,
+      title,
+      author,
+    };
+    expect(transformPullRequestResponse(prFromGithub)).toEqual(transformedPR);
+  });
+});
+
+describe("findCommitCountForPR", () => {
+  it("accurately pairs pr details with respective commit count", () => {
+    const prDetails: PRDetail[] = [
+      { id: 1, number: 1, author: "author", title: "title" },
+      { id: 2, number: 2, author: "author", title: "title" },
+      { id: 3, number: 3, author: "author", title: "title" },
+      { id: 4, number: 4, author: "author", title: "title" },
+      { id: 5, number: 5, author: "author", title: "title" },
+    ];
+    const commitCount = 192;
+    const prIndex = 3;
+    const formattedPrResponse = findCommitCountForPR(prDetails)(
+      commitCount,
+      prIndex
+    );
+    expect(formattedPrResponse.commitCount).toBe(commitCount);
+    const matchingPR = prDetails.find(
+      (pr) => pr.id === formattedPrResponse.prId
+    );
+    expect(prDetails).toContain(matchingPR);
   });
 });
 
