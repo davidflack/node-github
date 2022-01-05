@@ -1,20 +1,7 @@
 import { AxiosResponse } from "axios";
 import { Request } from "express";
 import { axiosInstance as axios } from "../../config";
-
-export interface GithubPullRequestModel {
-  id: number;
-  number: number;
-  title: string;
-  user: { login: string };
-}
-
-export interface PRDetail {
-  id: number;
-  number: number;
-  title: string;
-  author: string;
-}
+import { GithubPullRequestModel, PRDetail } from "./models";
 
 export function validateRequest(req: Request): Promise<string> {
   if (

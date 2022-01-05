@@ -2,7 +2,6 @@ import { Request } from "express";
 import { AxiosResponse } from "axios";
 import { axiosInstance as axios } from "../../config";
 import {
-  GithubPullRequestModel,
   validateRequest,
   requestPRInfo,
   trimQueryParamsFromUrl,
@@ -11,9 +10,12 @@ import {
   calculateCommitNumber,
   extractErrorStatusCode,
   transformPullRequestResponse,
-  PRDetail,
   findCommitCountForPR,
 } from "../../apiRoutes/github/helpers";
+import {
+  GithubPullRequestModel,
+  PRDetail,
+} from "../../apiRoutes/github/models";
 
 beforeEach(() => jest.clearAllMocks());
 
