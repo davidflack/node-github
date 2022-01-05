@@ -9,6 +9,13 @@ export interface GithubPullRequestModel {
   user: { login: string };
 }
 
+export interface PRDetail {
+  id: number;
+  number: number;
+  title: string;
+  author: string;
+}
+
 export function validateRequest(req: Request): Promise<string> {
   if (
     !req.query.repoOwner ||
@@ -71,30 +78,44 @@ export function calculateCommitNumber(
   return githubResponses.map((res) => res.data.length);
 }
 
+export function transformPullRequestResponse(
+  prResponse: GithubPullRequestModel
+): PRDetail {
+  const {
+    id,
+    number,
+    title,
+    user: { login },
+  } = prResponse;
+  return { id, number, title, author: login };
+}
+
+export const findCommitCountForPR =
+  (prDetails: PRDetail[]) => (commitCount: number, i: number) => {
+    const { id: prId, number: prNumber, author, title } = prDetails[i];
+    return {
+      prId,
+      prNumber,
+      author,
+      title,
+      commitCount,
+    };
+  };
+
+const addCommitCountToPRDetails =
+  (prDetails: PRDetail[]) => (commitCounts: number[]) => {
+    const formattedCommits = commitCounts.map(findCommitCountForPR(prDetails));
+    return Promise.resolve(formattedCommits);
+  };
+
 export function requestCommitInfo(
   prResponse: AxiosResponse<GithubPullRequestModel[], any>
 ) {
-  const prDetails = prResponse.data.map(
-    ({ id, number, title, user: { login } }) => {
-      return { id, number, title, author: login };
-    }
-  );
+  const prDetails = prResponse.data.map(transformPullRequestResponse);
   return generateCommitRequestUrls(prResponse)
     .then(initiateCommitRequests)
     .then(calculateCommitNumber)
-    .then((commitCounts) => {
-      const formattedCommits = commitCounts.map((commitCount, i) => {
-        const { id: prId, number: prNumber, author, title } = prDetails[i];
-        return {
-          prId,
-          prNumber,
-          author,
-          title,
-          commitCount,
-        };
-      });
-      return Promise.resolve(formattedCommits);
-    })
+    .then(addCommitCountToPRDetails(prDetails))
     .catch((e) =>
       Promise.reject(new Error(`Failed processing commit info: ${e}`))
     );
