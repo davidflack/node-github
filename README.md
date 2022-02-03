@@ -36,7 +36,7 @@ yarn install
 yarn start
 ```
 
-- By default, his will run the UI on `http://localhost:3000` and the REST API at `http://localhost:3131`.
+- By default, this will run the UI on `http://localhost:3000` and the REST API at `http://localhost:3131`.
 
 ## API Endpoints:
 
